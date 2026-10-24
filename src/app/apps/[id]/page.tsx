@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { appsData } from "@/data/apps";
@@ -9,7 +9,8 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGri
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-export default function AppDetails() {
+// 1. Move the component that uses useParams into a separate child component
+function AppDetailsContent() {
   const { id } = useParams();
   const router = useRouter();
   const [isInstalled, setIsInstalled] = useState(false);
@@ -110,5 +111,18 @@ export default function AppDetails() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+// 2. The main Page component wraps the content in <Suspense>
+export default function AppDetails() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-2xl font-bold text-slate-500 animate-pulse">Loading app details...</div>
+      </div>
+    }>
+      <AppDetailsContent />
+    </Suspense>
   );
 }
